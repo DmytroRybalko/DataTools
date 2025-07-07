@@ -1,0 +1,28 @@
+Given a MATLAB plot-building script, I want to extract documentation and variable usage for all plot sections. Specifically:
+
+1. For each major plot section, defined by a prominent comment heading (for example, lines with many dashes and a title like %---- North, east and vertical velocity components plots ----%), extract the heading.
+2. For each section, extract only the variables that are used as arguments in plot() functions within that section. Ignore all other code and ignore variables used only outside plot().
+3. For each block, output the results in two formats:
+   - A Markdown file, with each heading followed by the list of unique variables used in plot() commands in that block.
+   - A CSV file (semicolon ; separator) with columns: variable;head, where each variable is paired with its heading.
+
+Example Output Format:
+
+````markdown
+# North, east and vertical velocity components plots
+t  
+V_dvl_mass  
+...
+
+CSV:
+variable;head
+t;North, east and vertical velocity components plots
+V_dvl_mass;North, east and vertical velocity components plots
+...
+
+Rules:
+- Do not include variables that are only used in other functions or outside plot().
+- Use only variables that appear directly as arguments to plot().
+- Each variable should only appear under its relevant heading(s).
+- Use a semicolon as the CSV separator.
+- Repeat for all major plot sections in the file.
