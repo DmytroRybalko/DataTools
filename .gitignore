@@ -1,3 +1,7 @@
+# Ignore specific folders
+Read_BIN/data
+Read_BIN/ISON_*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -80,6 +84,7 @@ coverage.xml
 
 # Logs
 *.log
+*.bin
 
 # MacOS
 .DS_Store
