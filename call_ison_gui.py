@@ -101,10 +101,23 @@ def call_ison_gui(app_exe, time_sleep=1):
         time.sleep(time_sleep)  # Wait for the operation to complete
     else:
         print("Open button not found or not enabled.")
+    
+    # ===================================================================
+    # Wait for the Information window about converting log to bin appear
+    # ===================================================================
+    
+    # Use a while True loop to continuously check for the appearance of the Information_window.
+    # Once it appears, break the loop and continue with your process.
+    while True:
+        Information_window = main_win.child_window(title="Information")
+        if Information_window.exists():
+            break
+        time.sleep(1)
+
+    Information_window.wait('visible', timeout=time_sleep)
 
     # Find button to open the file
     print("All elements in child window (Information):")
-    Information_window = main_win.child_window(title="Information")
     for element in Information_window.descendants():
         print(f"{element.element_info.control_type}: {element.window_text()}")
         if element.window_text() == "OK":
@@ -145,8 +158,21 @@ def call_ison_gui(app_exe, time_sleep=1):
     else:
         print("Open button not found or not enabled.")
 
+    # ===================================================================
+    # Wait for the Information window about converting bin to txt appear
+    # ===================================================================
+    
+    # Use a while True loop to continuously check for the appearance of the Information_window.
+    # Once it appears, break the loop and continue with your process.
+    while True:
+        Information_window2 = main_win.child_window(title="Information")
+        if Information_window2.exists():
+            break
+        time.sleep(1)
+
+    Information_window2.wait('visible', timeout=time_sleep)
+
     # Extract the final "OK" button from the Information window
-    Information_window2 = main_win.child_window(title="Information")
     for element in Information_window2.descendants():
         #print(f"{element.element_info.control_type}: {element.window_text()}")
         if element.window_text() == "OK":
