@@ -1,0 +1,127 @@
+def call_ison_gui(app_exe, time_sleep=1):
+    """
+    Launches the ISON GUI application and automates the process of converting log data to a bin file.
+
+    Parameters:
+        app_exe (str): Path to the ISON application executable.
+        time_sleep (float, optional): Time to sleep between UI actions (seconds). Default is 1.
+    """
+    from pywinauto.application import Application, ProcessNotFoundError
+    from pywinauto import timings
+    from tkinter import Tk, filedialog
+    import time
+
+    # Hide main Tk window
+    root = Tk()
+    root.withdraw()
+
+    # Start the application
+    app = Application(backend="uia").start(app_exe)
+
+    dlg_select_mode = app.window(title=r"Select program type")
+    dlg_select_mode.wait('visible', timeout=1)
+    print("Started a new instance of the application.")
+
+    # Try to click the OK button (case-insensitive, anywhere in text)
+    ok_button = dlg_select_mode.child_window(title="OK", control_type="Button")
+    ok_button.click_input()
+    time.sleep(time_sleep)
+
+    # Access the main window again if needed
+    main_win = app.top_window()
+    print(f"Captured window title: {main_win.window_text()}")
+    time.sleep(time_sleep)
+
+    # Print all MenuItem controls in the main window
+    print("Menu items after clicking Convert:")
+    for item in main_win.descendants(control_type="MenuItem"):
+        print(item.window_text())
+
+    # Open the "Convert" menu
+    convert_menu = main_win.child_window(title="Convert", control_type="MenuItem")
+    print(f"Captured menu item: {convert_menu.window_text()}")
+    convert_menu.click_input()
+    time.sleep(time_sleep)  # Pause for 1 second
+
+    print("Submenu items under Convert:")
+    for item in convert_menu.descendants():
+        print(item.window_text())
+
+    # Select "Convert data to bin file ..."
+    convert_log2bin_item = main_win.child_window(title="Convert log data to bin file...", control_type="MenuItem")
+    convert_log2bin_item.click_input()
+    time.sleep(time_sleep)  # Wait for dialog to appear
+
+    # Check flash files in the dialog
+    listview = main_win.child_window(control_type="List")
+    for item in listview.descendants(control_type="ListItem"):
+        print(item.window_text())
+
+    # Select the first .flash file from the list
+    flash_file = [item.window_text() for item in listview.descendants(control_type="ListItem") if item.window_text().endswith(".flash")][0]
+    file_item = listview.child_window(title=flash_file, control_type="ListItem")
+    file_item.click_input()
+    time.sleep(time_sleep)
+
+    # Find button to open the file
+    Open_file_window = main_win.child_window(title="Open file")
+    for element in Open_file_window.descendants(title="Відкрити"):
+        print(f"{element.element_info.control_type}: {element.window_text()}")
+        if element.window_text() == "Відкрити":
+            open_btn = element
+
+    # Click the Open button (if present)
+    open_btn = main_win.child_window(title="Відкрити", control_type=open_btn.element_info.control_type)
+    if open_btn.is_enabled():
+        open_btn.click_input()
+        time.sleep(time_sleep)
+    else:
+        print("Open button not found or not enabled.")
+
+    # Check log files in the dialog
+    list_logs = main_win.child_window(control_type="List")
+    for item in list_logs.descendants(control_type="ListItem"):
+        print(item.window_text())
+
+    # Choose only one file
+    log_file_name = [item.window_text() for item in list_logs.descendants(control_type="ListItem", title="INS")][0]
+
+    # Select a file by its name (replace with your actual file name)
+    log_file = list_logs.child_window(title=log_file_name, control_type="ListItem")
+    log_file.click_input()
+    time.sleep(time_sleep)
+
+    # Click the Open button (if present)
+    if open_btn.is_enabled():
+        open_btn.click_input()
+        time.sleep(time_sleep)  # Wait for the operation to complete
+    else:
+        print("Open button not found or not enabled.")
+
+    bb = main_win.child_window(title="Information")
+    bb.window_text() #print_control_identifiers()
+
+    # Find button to open the file
+    print("All elements in child window (Information):")
+    Information_window = main_win.child_window(title="Information")
+    for element in Information_window.descendants():
+        print(f"{element.element_info.control_type}: {element.window_text()}")
+        if element.window_text() == "OK":
+            ok_btn = element
+
+    # Click the button OK
+    open_btn = main_win.child_window(title="OK", control_type=ok_btn.element_info.control_type)
+    open_btn.window_text()
+    open_btn.click_input()
+    time.sleep(0.5)
+
+    # Close application
+    if not Information_window.exists():
+       main_win.close()
+
+if __name__ == "__main__":
+    import sys
+    # Usage: python call_ison_gui.py <app_exe> [time_sleep]
+    app_exe = sys.argv[1] if len(sys.argv) > 1 else r"c:\DimDev\DataTools\Read_BIN\ISON_321_20250314\ISON_321.exe"
+    time_sleep = float(sys.argv[2]) if len(sys.argv) > 2 else 1
+    call_ison_gui(app_exe, time_sleep)
