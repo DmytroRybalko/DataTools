@@ -1,3 +1,6 @@
+import time
+
+
 def call_ison_gui(app_exe, time_sleep=1):
     """
     Launches the ISON GUI application and automates the process of converting log data to a bin file.
@@ -7,6 +10,7 @@ def call_ison_gui(app_exe, time_sleep=1):
         time_sleep (float, optional): Time to sleep between UI actions (seconds). Default is 1.
     """
     from pywinauto.application import Application, ProcessNotFoundError
+    from pywinauto.keyboard import send_keys
     from pywinauto import timings
     from tkinter import Tk, filedialog
     import time
@@ -98,9 +102,6 @@ def call_ison_gui(app_exe, time_sleep=1):
     else:
         print("Open button not found or not enabled.")
 
-    bb = main_win.child_window(title="Information")
-    bb.window_text() #print_control_identifiers()
-
     # Find button to open the file
     print("All elements in child window (Information):")
     Information_window = main_win.child_window(title="Information")
@@ -110,14 +111,56 @@ def call_ison_gui(app_exe, time_sleep=1):
             ok_btn = element
 
     # Click the button OK
-    open_btn = main_win.child_window(title="OK", control_type=ok_btn.element_info.control_type)
-    open_btn.window_text()
-    open_btn.click_input()
+    ok_btn.window_text()
+    ok_btn.click_input()
+    time.sleep(time_sleep)
+
+    #===========================
+    # === Convert bin to txt ===
+    #===========================
+
+    # Make sure the main window is active
+    main_win.set_focus()
     time.sleep(0.5)
 
+    # Send F8 key to open the dialog window (Converter->Report of experiment...)
+    send_keys('{F8}')
+    time.sleep(time_sleep)  # Wait for the dialog to appear
+
+    # Find INS_Converted.BIN file in the dialog
+    list_bin_files = main_win.child_window(control_type="List")
+    for element in list_bin_files.descendants(control_type="ListItem"):
+        if element.window_text() == "INS_Converted":
+            bin_file = element
+        #print(element.window_text())
+
+    # Select bin file by its name (replace with your actual file name)
+    bin_file.click_input()
+    time.sleep(time_sleep)
+
+    # Click the Open button (if present)
+    if open_btn.is_enabled():
+        open_btn.click_input()
+        time.sleep(time_sleep)  # Wait for the operation to complete
+    else:
+        print("Open button not found or not enabled.")
+
+    # Extract the final "OK" button from the Information window
+    Information_window2 = main_win.child_window(title="Information")
+    for element in Information_window2.descendants():
+        #print(f"{element.element_info.control_type}: {element.window_text()}")
+        if element.window_text() == "OK":
+            ok_btn2 = element
+
+    # Confirm the OK button is present and click it
+    ok_btn2.click_input()
+    time.sleep(time_sleep)
+
+    # ===================
     # Close application
+    # ===================
     if not Information_window.exists():
-       main_win.close()
+        main_win.close()
 
 if __name__ == "__main__":
     import sys
