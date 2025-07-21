@@ -4,7 +4,7 @@ def extract_location(path2file):
     """
     Finds the header line containing column names, finds 'Latitude' and 'Longitude' columns,
     skips 12000 lines, and extracts the corresponding values.
-    Returns coordinates as string '<lat>_<lon>'.
+    Returns coordinates as tuple (<lat>, <lon>)
     """
     # Find header line that starts with 'GPS_INS_Time_Round'
     header_line_num = None
@@ -35,7 +35,7 @@ def extract_location(path2file):
         data = re.split(r'\s+', data_line.strip())
         lat = data[lat_idx]
         lon = data[lon_idx]
-        return f"{lat}_{lon}"
+        return (lat, lon)
 
 if __name__ == "__main__":
     import sys
