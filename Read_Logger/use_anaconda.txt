@@ -1,0 +1,7 @@
+How to use or create new conda environment:
+1) Choose directory with conda environment or create new one
+2) Run Anaconda prompt terminal, go to destination folder and create new environment (conda create -n <new_name> python=3.11)
+3) Activate environment: conda activate <env_name>
+4) Install requared packages: conda install pandas
+5) Call VS Code from Conda Prompt: code
+6) Ctl+Shift+P:Select Python interpretator (env)
