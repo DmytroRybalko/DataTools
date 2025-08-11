@@ -6,6 +6,40 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 from playwright.async_api import async_playwright
 
+#contents > tbody > tr:nth-child(3) > td:nth-child(5) > a
+#<a href="javascript:void(0)" onclick="deleteItem(&quot;M2001887-000000002&quot;);">...</a>
+# /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[2]/td[5]/a
+# /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[3]/td[5]/a
+def delete_file(ip_address):
+    """Fetches and prints file names from the logger storage page."""
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        page.goto(ip_address)
+        page.click('//*[@id="Storage"]')
+        
+        # Wait for the table to load (adjust selector if needed)
+        page.wait_for_selector('//*[@id="contents"]/tbody/tr[2]/td[5]/a')
+
+        # Set up dialog handler before clicking the delete button
+        def handle_dialog(dialog):
+            print(f"Dialog message: {dialog.message}")
+            dialog.accept()  # Accept the confirmation
+            
+        time.sleep(1)  # Wait for the dialog to close
+        input("Before pop-up...")
+        page.on("dialog", handle_dialog)
+        time.sleep(5)  # Wait for the dialog to close
+        input("After confirm...")
+        # Click the delete button (adjust XPath as needed)
+        page.click('//*[@id="contents"]/tbody/tr[2]/td[5]/a')
+        time.sleep(2)  # Wait for the dialog to close
+
+        input("After onclick...")
+        #browser.close()
+    
+    #return files2save
+
 def get_file_names(ip_address, files2save):
     """Fetches and prints file names from the logger storage page."""
     with sync_playwright() as p:
@@ -66,19 +100,22 @@ def download_files_sync(ip_address, files2download, save_dir="data"):
 if __name__ == "__main__":
     
     # Setup
-    url_name = "http://192.168.0.102"
-    files2download = get_file_names(url_name, "files2download.txt")
+    url_name = "http://192.168.1.149"
+    #files2download = get_file_names(url_name, "files2download.txt")
     #print(f"List of files to download is ready: {files2download}")
     save_dir = "data"
     
+    # Test delete file
+    delete_file(url_name)
+
     # Test file names
     #get_file_names(url_name, files2download)
 
     # Process files
-    start_time = time.time()
-    download_files_sync(url_name, files2download, save_dir)
-    elapsed = time.time() - start_time
-    print(f"Total time: {elapsed:.2f} seconds")
+    # start_time = time.time()
+    # download_files_sync(url_name, files2download, save_dir)
+    # elapsed = time.time() - start_time
+    # print(f"Total time: {elapsed:.2f} seconds")
     
     
     
