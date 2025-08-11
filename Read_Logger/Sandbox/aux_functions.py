@@ -11,9 +11,10 @@ from playwright.async_api import async_playwright
 # /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[2]/td[5]/a
 # /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[3]/td[5]/a
 def delete_file(ip_address):
-    """Fetches and prints file names from the logger storage page."""
+    """Delete all files from the logger storage ."""
+    
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         page.goto(ip_address)
         page.click('//*[@id="Storage"]')
@@ -21,24 +22,30 @@ def delete_file(ip_address):
         # Wait for the table to load (adjust selector if needed)
         page.wait_for_selector('//*[@id="contents"]/tbody/tr[2]/td[5]/a')
 
+        # Get total number of files
+        links = page.query_selector_all('//*[@id="contents"]/tbody/tr/td[5]/a')
+        counter = len(links)
+        print(f"Total files to delete: {counter}")
+        
         # Set up dialog handler before clicking the delete button
         def handle_dialog(dialog):
             print(f"Dialog message: {dialog.message}")
-            dialog.accept()  # Accept the confirmation
-            
-        time.sleep(1)  # Wait for the dialog to close
-        input("Before pop-up...")
+            dialog.accept()
+        
         page.on("dialog", handle_dialog)
-        time.sleep(5)  # Wait for the dialog to close
-        input("After confirm...")
-        # Click the delete button (adjust XPath as needed)
-        page.click('//*[@id="contents"]/tbody/tr[2]/td[5]/a')
-        time.sleep(2)  # Wait for the dialog to close
 
-        input("After onclick...")
-        #browser.close()
-    
-    #return files2save
+        # Number of files to delete, adjust as needed    
+        stop_number = counter - 2  # number of files to delete, starting from the second one in the list
+        try:
+            while counter > stop_number:
+                page.click(f'//*[@id="contents"]/tbody/tr[2]/td[5]/a')
+                time.sleep(2)  
+                counter -= 1
+        except Exception as e:
+            print(f"[!] Error during deletion: {e}")
+        
+        browser.close()
+
 
 def get_file_names(ip_address, files2save):
     """Fetches and prints file names from the logger storage page."""
