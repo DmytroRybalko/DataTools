@@ -1,6 +1,8 @@
 # Ignore specific folders
 Read_BIN/data
 Read_BIN/ISON_*
+!Read_BIN/ison_parser/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -58,6 +60,9 @@ coverage.xml
 .vscode/
 
 # Data files (customize as needed!)
+*.flash
+*.prm
+*.txt
 *.csv
 *.tsv
 *.xls
