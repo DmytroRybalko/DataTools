@@ -187,6 +187,7 @@ def call_ison_gui(app_exe, time_sleep=1):
     # ===================
     if not Information_window.exists():
         main_win.close()
+        return True
 
 if __name__ == "__main__":
     import sys

@@ -60,6 +60,7 @@ coverage.xml
 .vscode/
 
 # Data files (customize as needed!)
+*.html
 *.flash
 *.prm
 *.txt
