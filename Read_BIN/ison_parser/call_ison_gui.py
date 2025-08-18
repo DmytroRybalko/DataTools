@@ -130,9 +130,9 @@ def call_ison_gui(app_exe, time_sleep=1):
                 
                 # Find button to open the file
                 ok_btn = None
-                print("All elements in child window (Information):")
+                #print("All elements in child window (Information):")
                 for element in Information_window.descendants():
-                    print(f"{element.element_info.control_type}: {element.window_text()}")
+                    #print(f"{element.element_info.control_type}: {element.window_text()}")
                     if element.window_text() == "OK":
                         ok_btn = element
                         break
@@ -155,9 +155,9 @@ def call_ison_gui(app_exe, time_sleep=1):
 
                 # Find button to open the file
                 ok_btn = None
-                print("All elements in child window (Error):")
+                #print("All elements in child window (Error):")
                 for element in error_window.descendants():
-                    print(f"{element.element_info.control_type}: {element.window_text()}")
+                    #print(f"{element.element_info.control_type}: {element.window_text()}")
                     if element.window_text() == "OK":
                         ok_btn = element
                         break
@@ -226,9 +226,9 @@ def call_ison_gui(app_exe, time_sleep=1):
                 
                 # Find button to open the file
                 ok_btn = None
-                print("All elements in child window (Information):")
+                #print("All elements in child window (Information):")
                 for element in Information_window.descendants():
-                    print(f"{element.element_info.control_type}: {element.window_text()}")
+                    #print(f"{element.element_info.control_type}: {element.window_text()}")
                     if element.window_text() == "OK":
                         ok_btn = element
                         break
@@ -251,9 +251,9 @@ def call_ison_gui(app_exe, time_sleep=1):
 
                 # Find button to open the file
                 ok_btn = None
-                print("All elements in child window (Error):")
+                #print("All elements in child window (Error):")
                 for element in error_window.descendants():
-                    print(f"{element.element_info.control_type}: {element.window_text()}")
+                    #print(f"{element.element_info.control_type}: {element.window_text()}")
                     if element.window_text() == "OK":
                         ok_btn = element
                         break
