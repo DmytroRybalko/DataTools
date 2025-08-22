@@ -1,7 +1,10 @@
 import logging
 import os
 
-LOG_FILE = os.path.join(r"C:\DimDev\DataTools\Read_BIN", "process.log")
+# Get the directory of the current script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE = os.path.join(BASE_DIR, "process.log")
+
 logging.basicConfig(
     filename=LOG_FILE,
     filemode='w',  # Overwrite the log file each run
