@@ -37,13 +37,20 @@ Copy the entire `Read_Logger` folder to your PC.
     ```
     logger\Scripts\activate.bat   
     ```
-3. Run script with actual parameters:
+3. Run script for downlod files with actual parameters:
     ```
     python data_from_logger.py --ip http://192.168.0.102 --save_dir data
     ```
 
 - Replace `http://192.168.0.102` with your logger's IP address if different.
 - The `--save_dir` argument is optional (default is `data`).
+
+4. Run script for delete files with actual parameters:
+    ```
+    python delete_files_from_logger.py --ip http://192.168.0.102
+    ```
+
+- Replace `http://192.168.0.102` with your logger's IP address if different.
 
 ## Notes
 - The first run may take longer as Playwright downloads browser binaries.

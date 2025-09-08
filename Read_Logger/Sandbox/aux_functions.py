@@ -1,15 +1,22 @@
-import asyncio
+#import asyncio
 import os
 import requests
 import time
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
-from playwright.async_api import async_playwright
+#from playwright.async_api import async_playwright
 
 #contents > tbody > tr:nth-child(3) > td:nth-child(5) > a
 #<a href="javascript:void(0)" onclick="deleteItem(&quot;M2001887-000000002&quot;);">...</a>
 # /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[2]/td[5]/a
 # /html/body/div[2]/div/div/div/fieldset/table/tbody/tr[3]/td[5]/a
+
+# Set up dialog handler before clicking the delete button
+def handle_dialog(dialog):
+    file_name = dialog.message.split(' ')[9].split('\n')[0]
+    print(f"Deleting file: {file_name}")
+    dialog.accept()
+
 def delete_file(ip_address):
     """Delete all files from the logger storage ."""
     
@@ -25,22 +32,25 @@ def delete_file(ip_address):
         # Get total number of files
         links = page.query_selector_all('//*[@id="contents"]/tbody/tr/td[5]/a')
         counter = len(links)
-        print(f"Total files to delete: {counter}")
+        if counter > 0:
+            print(f"Total files to delete: {counter} from data logger {ip_address} :\n")
+        else:
+            print("No files to delete")
+            return
         
-        # Set up dialog handler before clicking the delete button
-        def handle_dialog(dialog):
-            print(f"Dialog message: {dialog.message}")
-            dialog.accept()
-        
+        input(f"It will be deleted {counter} files. Please, be shure your've copied files before!!! Press Enter to delete...\n")
+        # Accept dialog window to delete file
         page.on("dialog", handle_dialog)
 
         # Number of files to delete, adjust as needed    
-        stop_number = counter - 2  # number of files to delete, starting from the second one in the list
+        stop_number = counter - 2  # For Test only: number of files to delete, starting from the second one in the list
+        #stop_number = 1  # standard, leave one file
         try:
             while counter > stop_number:
                 page.click(f'//*[@id="contents"]/tbody/tr[2]/td[5]/a')
                 time.sleep(2)  
                 counter -= 1
+            print(f"All files have been deleted!")
         except Exception as e:
             print(f"[!] Error during deletion: {e}")
         
@@ -107,7 +117,7 @@ def download_files_sync(ip_address, files2download, save_dir="data"):
 if __name__ == "__main__":
     
     # Setup
-    url_name = "http://192.168.1.149"
+    url_name = "http://192.168.1.147"
     #files2download = get_file_names(url_name, "files2download.txt")
     #print(f"List of files to download is ready: {files2download}")
     save_dir = "data"
@@ -124,36 +134,3 @@ if __name__ == "__main__":
     # elapsed = time.time() - start_time
     # print(f"Total time: {elapsed:.2f} seconds")
     
-    
-    
-
-
-# Async file downloader
-# import aiohttp
-# import aiofiles
-# import os
-
-# async def download_file(session, url, save_path):
-#     try:
-#         async with session.get(url) as resp:
-#             resp.raise_for_status()
-#             async with aiofiles.open(save_path, 'wb') as f:
-#                 async for chunk in resp.content.iter_chunked(1024):
-#                     await f.write(chunk)
-#         print(f"Downloaded: {save_path}")
-#     except Exception as e:
-#         print(f"Failed to download {url}: {e}")
-
-# async def download_files(ip_address, file_names, save_dir="data"):
-#     """Downloads files asynchronously from the logger given a list of file names."""
-#     os.makedirs(save_dir, exist_ok=True)
-#     base_url = f"{ip_address}/cgi-bin/download?"
-#     async with aiohttp.ClientSession() as session:
-#         tasks = []
-#         for name in file_names:
-#             url = base_url + name
-#             save_path = os.path.join(save_dir, name + ".zip")
-#             tasks.append(download_file(session, url, save_path))
-#         await asyncio.gather(*tasks)
-
-
